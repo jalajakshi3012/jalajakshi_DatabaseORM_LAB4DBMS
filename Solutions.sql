@@ -46,5 +46,26 @@ select c.CUS_NAME,c.CUS_GENDER from customer c where (c.CUS_NAME LIKE '%A') OR (
 -- Type_of_Service. For Type_of_Service, If rating =5, print “Excellent Service”,If rating >4 print “Good Service”, If rating >2   -- print “Average
 -- Service” else print “Poor Service”. Note that there should be one rating per supplier.
 
+-- stored procedure
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DisplaySupplierRatingDetails`()
+BEGIN
+select  SUPP_ID,SUPP_NAME,averagerating,
+CASE when averagerating =5 THEN 'EXCELLENT SERVICE'
+		 WHEN averagerating>4 THEN 'GOOD SERVICE'
+         WHEN averagerating>2 THEN 'AVERAGE SERVICE'
+         else  'POOR SERVICE'
+	END AS ServiceType
+    from(
+select s.SUPP_ID,s.SUPP_NAME,avg(r.RAT_RATSTARS)  averagerating 
+from rating r 
+		inner join `order` o
+        inner join supplier_pricing sp
+        inner join supplier s
+        on(
+        r.ORD_ID=o.ORD_ID and
+        o.PRICING_ID=sp.pricing_id and
+        sp.SUPP_ID=s.SUPP_ID) group by SUPP_ID) as r_o_sp_s;
+END
+-- Procedure call
 call DisplaySupplierRatingDetails();
 
