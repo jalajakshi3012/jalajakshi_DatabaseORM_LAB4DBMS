@@ -24,6 +24,15 @@ where o.CUS_Id = 2;
 select s.* , count(sp.PRO_ID) as noOfProducts from supplier_pricing sp,supplier s where sp.SUPP_ID=s.SUPP_ID group by sp.SUPP_ID HAVING count(sp.PRO_ID)>1;
 
 -- Question 6
+select P_SP.* from category C
+inner join (
+select P.cat_id, P.pro_id, P.pro_name, Minimal_Product_Price from product p inner join (
+select pro_id, min(SUPP_PRICE) Minimal_Product_Price from supplier_pricing
+group by pro_id
+) as SP
+on p.PRO_ID = SP.PRO_ID
+) as P_SP 
+ON (C.CAT_ID = P_SP.CAT_ID);
 
 
 -- Question 7
